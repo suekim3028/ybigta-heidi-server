@@ -7,19 +7,53 @@ class UserBase(BaseModel):
     gender: str
     height: float
     weight: float
-    birth_year: int
     job: str
-    area: str
+
+
+class UserSchemaBase(UserBase):
     has_children: bool
+    phone_country_code: str
+    phone_local_number: str
+    area_level_1: str
+    area_level_2: str
+    birth_year: int
 
 
+class UserDtoBase(UserBase):
+    hasChildren: bool
+    phoneCountryCode: str
+    phoneLocalNumber: str
+    area: list[str]
+    birthYear: int
 
-class UserCreate(UserBase):
+
+class UserCreate(UserSchemaBase):
     password: str
 
 
-class User(UserBase):
+class UserSchema(UserSchemaBase):
     id: int
 
     class Config:
         from_attributes = True
+
+
+class UserDto(UserDtoBase):
+    id: int
+
+
+def userSchema2Dto(user=UserSchema):
+    return UserDto(
+        id=user.id,
+        email=user.email,
+        name=user.name,
+        gender=user.gender,
+        height=user.height,
+        weight=user.weight,
+        job=user.job,
+        hasChildren=user.has_children,
+        phoneCountryCode=user.phone_country_code,
+        phoneLocalNumber=user.phone_local_number,
+        area=[user.area_level_1, user.area_level_2],
+        birthYear=user.birth_year
+    )

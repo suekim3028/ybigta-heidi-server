@@ -18,11 +18,13 @@ class User(Base):
     hashed_password = Column(String)
     name = Column(String)
     gender = Column(Enum(Gender))
-
     height = Column(Float)
     weight = Column(Float)
     birth_year = Column(Integer)
     job = Column(String)
-    area = Column(String)
     has_children = Column(Boolean)
+    phone_country_code= Column(String)
+    phone_local_number= Column(String)
+    area_level_1= Column(String)
+    area_level_2= Column(String)
 
