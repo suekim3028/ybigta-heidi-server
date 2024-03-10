@@ -58,7 +58,6 @@ def userSchema2Dto(user=UserSchema):
         birthYear=user.birth_year,
     )
 
-class UserCreateResponse(BaseModel):
+class UserResponse(BaseModel):
     user: UserDto
     token: str
-
