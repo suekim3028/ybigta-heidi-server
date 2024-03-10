@@ -55,5 +55,10 @@ def userSchema2Dto(user=UserSchema):
         phoneCountryCode=user.phone_country_code,
         phoneLocalNumber=user.phone_local_number,
         area=[user.area_level_1, user.area_level_2],
-        birthYear=user.birth_year
+        birthYear=user.birth_year,
     )
+
+class UserCreateResponse(BaseModel):
+    user: UserDto
+    token: str
+
