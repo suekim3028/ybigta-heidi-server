@@ -27,4 +27,3 @@ class User(Base):
     phone_local_number= Column(String)
     area_level_1= Column(String)
     area_level_2= Column(String)
-

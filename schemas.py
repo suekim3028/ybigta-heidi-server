@@ -42,7 +42,9 @@ class UserDto(UserDtoBase):
     id: int
 
 
-def userSchema2Dto(user=UserSchema):
+def userSchema2Dto(
+    user=UserSchema,
+):
     return UserDto(
         id=user.id,
         email=user.email,
@@ -58,6 +60,31 @@ def userSchema2Dto(user=UserSchema):
         birthYear=user.birth_year,
     )
 
+
 class UserResponse(BaseModel):
     user: UserDto
     token: str
+
+
+class ProgramMini(BaseModel):
+    id: int
+    name: str
+    rate: int
+    category: str
+
+
+class ProgramDetail(ProgramMini):
+    healthResult: int
+    place: str
+    duration: str
+    maxPeople: int
+    fee: int
+    address: str
+
+
+class ProgramListResponseDto(BaseModel):
+    programs: list[ProgramMini]
+
+
+class ProgramDetailResponseDto(BaseModel):
+    program: ProgramDetail
