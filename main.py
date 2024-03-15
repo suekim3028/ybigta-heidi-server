@@ -6,7 +6,7 @@ from .database import SessionLocal, engine
 from fastapi.middleware.cors import CORSMiddleware
 from json import JSONDecodeError
 import logging
-from .ml_model.models import recom_forest_hiking, calc_effect
+from .ml_model.models import recom_forest_hiking, calc_effect, recom_exp_healing
 
 
 # ,recom_exp_healing
@@ -59,17 +59,16 @@ def read_user(user_id: int, db: Session = Depends(get_db)):
     return schemas.UserResponse(user=schemas.userSchema2Dto(db_user), token="")
 
 
-@app.get("/programs/", response_model=schemas.ProgramListResponseDto)
+@app.get("/programs", response_model=schemas.ProgramListResponseDto)
 def getPrograms(user_id: int, db: Session = Depends(get_db)):
     db_user = crud.get_user(db, user_id=user_id)
 
     if db_user is None:
         raise HTTPException(status_code=404, detail="User not found")
 
-    exp_healing_programs = []
-    # recom_exp_healing.run(
-    #     db_user.birth_year, db_user.gender, db_user.job, db_user.has_children
-    # )
+    exp_healing_programs = recom_exp_healing.run(
+        db_user.birth_year, db_user.gender, db_user.job, db_user.has_children
+    )
 
     forest_hiking = recom_forest_hiking.run()
 
@@ -91,7 +90,7 @@ def getPrograms(user_id: int, db: Session = Depends(get_db)):
     return schemas.ProgramListResponseDto(programs=res_dtos)
 
 
-@app.get("/program/", response_model=schemas.ProgramDetailResponseDto)
+@app.get("/program", response_model=schemas.ProgramDetailResponseDto)
 def getPrograms(user_id: int, program_id: int, db: Session = Depends(get_db)):
     db_user = crud.get_user(db, user_id=user_id)
     if db_user is None:
