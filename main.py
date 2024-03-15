@@ -6,7 +6,7 @@ from .database import SessionLocal, engine
 from fastapi.middleware.cors import CORSMiddleware
 from json import JSONDecodeError
 import logging
-from .ml_model.models import recom_exp_healing
+from .ml_model.models import  recom_exp_healing,recom_forest, recom_hiking
 import random
 import pandas as pd 
 
@@ -67,15 +67,19 @@ def getPrograms(user_id: int, db: Session = Depends(get_db)):
         db_user.birth_year, db_user.gender, db_user.job, db_user.has_children
     )
 
+    forest_trails = recom_forest.run()
+    print(forest_trails)
 
-    res_programs = pd.concat([exp_healing_programs])
 
-    res_dtos = []
+    res_programs = pd.concat([exp_healing_programs,forest_trails])
+
+    res_dtos : list[schemas.ProgramMini] = []
 
     for __idx__, row in res_programs.iterrows():
-        res_dtos.append(schemas.ProgramMini(id = row["id"], name=row["name"], rate=3, category=row["category"] ))
+        res_dtos.append(schemas.ProgramMini(id = row["id"], name=row["name"], rate=3, category=row["category"] ,place=row["place"]))
 
-    return schemas.ProgramListResponseDto(programs=random.shuffle(res_dtos))
+    random.shuffle(res_dtos)
+    return schemas.ProgramListResponseDto(programs=res_dtos)
 
 
 @app.get("/program/", response_model=schemas.ProgramListResponseDto)

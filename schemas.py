@@ -71,11 +71,10 @@ class ProgramMini(BaseModel):
     name: str
     rate: int
     category: str
-
+    place: str
 
 class ProgramDetail(ProgramMini):
     healthResult: int
-    place: str
     duration: str
     maxPeople: int
     fee: int
