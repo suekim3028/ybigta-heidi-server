@@ -6,9 +6,12 @@ from .database import SessionLocal, engine
 from fastapi.middleware.cors import CORSMiddleware
 from json import JSONDecodeError
 import logging
-from .ml_model.models import  recom_exp_healing,recom_forest, recom_hiking
+from .ml_model.models import recom_forest_hiking, recom_exp_healing
+
+# ,recom_exp_healing
+
 import random
-import pandas as pd 
+import pandas as pd
 
 models.Base.metadata.create_all(bind=engine)
 
@@ -40,7 +43,6 @@ def get_db():
 @app.post("/users/", response_model=schemas.UserResponse)
 async def create_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
     db_user = crud.get_user_by_email(db, email=user.email)
-    logger.info("뭐가 문제지")
     if db_user:
         raise HTTPException(status_code=400, detail="Email already registered")
     new_db_user = crud.create_user(db=db, user=user)
@@ -67,16 +69,23 @@ def getPrograms(user_id: int, db: Session = Depends(get_db)):
         db_user.birth_year, db_user.gender, db_user.job, db_user.has_children
     )
 
-    forest_trails = recom_forest.run()
-    print(forest_trails)
+    forest_hiking = recom_forest_hiking.run()
 
+    print(forest_hiking)
 
-    res_programs = pd.concat([exp_healing_programs,forest_trails])
-
-    res_dtos : list[schemas.ProgramMini] = []
+    res_dtos: list[schemas.ProgramMini] = []
+    res_programs = pd.concat([forest_hiking, exp_healing_programs])
 
     for __idx__, row in res_programs.iterrows():
-        res_dtos.append(schemas.ProgramMini(id = row["id"], name=row["name"], rate=3, category=row["category"] ,place=row["place"]))
+        res_dtos.append(
+            schemas.ProgramMini(
+                id=row["id"],
+                name=row["name"],
+                rate=3,
+                category=row["category"],
+                place=row["place"],
+            )
+        )
 
     random.shuffle(res_dtos)
     return schemas.ProgramListResponseDto(programs=res_dtos)
