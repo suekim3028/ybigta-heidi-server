@@ -72,13 +72,16 @@ class ProgramMini(BaseModel):
     rate: int
     category: str
     place: str
+    class Config:
+        from_attributes = True
 
 class ProgramDetail(ProgramMini):
-    healthResult: int
-    duration: str
+    healthResult: float
+    duration: float
     maxPeople: int
     fee: int
     address: str
+    distance: float
 
 
 class ProgramListResponseDto(BaseModel):
